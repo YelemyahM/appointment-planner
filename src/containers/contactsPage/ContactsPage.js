@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
 import { ContactForm } from "../../components/contactForm/ContactForm";
 import { TileList } from "../../components/tileList/TileList";
@@ -19,28 +19,22 @@ export const ContactsPage = ({ contacts, addContact }) => {
     }
   };
 
-  useEffect(() => {
-    const nameIsDuplicate = () => {
-      const nameFound = contacts.find((contact) => contact === contact.name);
-      if (nameFound !== undefined) {
-        return true;
-      } else {
-        return false;
-      }
-    };
+  const nameIsDuplicate = useMemo(() => {
+    const nameFound = contacts.find(
+      (contact) => contact.name.toLowerCase === name.toLowerCase
+    );
+    return nameFound !== undefined;
+  }, [name, contacts]);
 
-    if (nameIsDuplicate()) {
-      setDuplicate(true);
-    } else {
-      setDuplicate(false);
-    }
-  }, [name, contacts, duplicate]);
+  useEffect(() => {
+    setDuplicate(nameIsDuplicate);
+  }, [nameIsDuplicate]);
 
   return (
     <div>
       <section>
         <h2>Add Contact {duplicate ? " - This name already exists" : ""}</h2>
-        <ContactForm 
+        <ContactForm
           name={name}
           setName={setName}
           phone={phone}
